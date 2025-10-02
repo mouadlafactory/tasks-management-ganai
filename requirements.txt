@@ -1,0 +1,7 @@
+flask
+flask-cors
+flask-bcrypt
+pymongo
+python-dotenv
+PyJWT==2.8.0
+bcrypt==4.0.1

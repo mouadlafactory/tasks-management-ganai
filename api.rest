@@ -1,0 +1,53 @@
+### health check
+GET http://localhost:8080/tasks
+
+### Create task
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+    "title": "We should have a team meeting tomorrow",
+    "description": "We should have a team meeting tomorrow to discuss the project"
+}
+
+### Get task
+GET http://localhost:8080/tasks/68de652a57bd6d410506919a
+
+
+### Put task
+PUT http://localhost:8080/tasks/68de652a57bd6d410506919a
+Content-Type: application/json
+
+{
+    "priority": "high"
+}
+
+
+
+### Delete task
+DELETE http://localhost:8080/tasks/
+
+
+
+
+### auth routes
+
+### register
+POST http://localhost:9090/auth/register
+Content-Type: application/json
+
+{
+    "first_name": "Mouad",
+    "last_name": "Bounfil",
+    "email": "mouad@example.com",       
+    "password": "12345678"
+}
+
+### login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "email": "mouad@example.com",
+    "password": "password"
+}

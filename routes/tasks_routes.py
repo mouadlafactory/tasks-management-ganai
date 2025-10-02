@@ -1,0 +1,29 @@
+from flask import Blueprint
+from controllers.tasks_controllers import (get_all_tasks,
+create_task, get_task, update_task, 
+delete_task)
+
+tasks_bp = Blueprint('tasks', __name__)
+
+@tasks_bp.route('/', methods=['GET'])
+def tasks():
+    return get_all_tasks()
+
+@tasks_bp.route('/', methods=['POST'])
+def create_task_route():
+    return create_task()
+
+@tasks_bp.route('/<string:task_id>', methods=['GET'])
+def get_task_route(task_id):
+    return get_task(task_id)
+
+
+
+@tasks_bp.route('/<string:task_id>', methods=['PUT'])
+def update_task_route(task_id):
+    return update_task(task_id)
+
+
+@tasks_bp.route('/<string:task_id>', methods=['DELETE'])
+def delete_task_route(task_id):
+    return delete_task(task_id)

@@ -44,10 +44,17 @@ Content-Type: application/json
 }
 
 ### login
-POST http://localhost:8080/auth/login
+POST http://localhost:9090/auth/login
 Content-Type: application/json
 
 {
     "email": "mouad@example.com",
-    "password": "password"
+    "password": "12345678"
 }
+
+
+### get all tasks
+GET https://tasks-management-ganai-production.up.railway.app/tasks
+Content-Type: application/json
+
+

@@ -6,6 +6,7 @@ from utils.generate_token import generate_token
 
 def logout():
     return jsonify({"message": "Logout successful"}), 200
+
 def register():
     try:    
         data = request.get_json()

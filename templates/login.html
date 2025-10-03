@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(222.2 84% 4.9%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "hsl(222.2 47.4% 11.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(210 40% 96%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(0 84.2% 60.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+<body class="min-h-screen bg-stone-50 flex items-center justify-center p-4">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+    
+    <!-- Main Container -->
+    <div class="relative w-full max-w-md">
+        <!-- Card -->
+        <div class="bg-white rounded-lg border border-stone-200 shadow-lg p-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="mx-auto w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-tasks text-white text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-semibold text-stone-900 mb-2">Welcome back</h1>
+                <p class="text-stone-600 text-sm">Enter your credentials to access your account</p>
+            </div>
+
+            <!-- Toggle Buttons -->
+            <div class="flex bg-stone-100 rounded-lg p-1 mb-6">
+                <button id="login-tab" class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 bg-white text-stone-900 shadow-sm">
+                    Sign In
+                </button>
+                <button id="register-tab" class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 text-stone-600 hover:text-stone-900">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-4">
+                <div class="space-y-2">
+                    <label for="login-email" class="text-sm font-medium text-stone-700">Email</label>
+                    <input 
+                        id="login-email" 
+                        name="email" 
+                        type="email" 
+                        required 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your email"
+                    >
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="login-password" class="text-sm font-medium text-stone-700">Password</label>
+                    <div class="relative">
+                        <input 
+                            id="login-password" 
+                            name="password" 
+                            type="password" 
+                            required 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                            placeholder="Enter your password"
+                        >
+                        <button type="button" id="toggle-login-password" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                            <i class="fas fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="w-4 h-4 text-black border-stone-300 rounded focus:ring-black focus:ring-2">
+                        <span class="ml-2 text-sm text-stone-600">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm text-black hover:underline">Forgot password?</a>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full bg-black text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="login-submit"
+                >
+                    <span class="flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Sign In
+                    </span>
+                </button>
+            </form>
+
+            <!-- Register Form (Hidden by default) -->
+            <form id="register-form" class="space-y-4 hidden">
+                <div class="space-y-2">
+                    <label for="register-name" class="text-sm font-medium text-stone-700">Full Name</label>
+                    <input 
+                        id="register-name" 
+                        name="name" 
+                        type="text" 
+                        required 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your full name"
+                    >
+                </div>
+
+                <div class="space-y-2">
+                    <label for="register-username" class="text-sm font-medium text-stone-700">Username</label>
+                    <input 
+                        id="register-username" 
+                        name="username" 
+                        type="text" 
+                        required 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                        placeholder="Choose a username"
+                    >
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="register-email" class="text-sm font-medium text-stone-700">Email</label>
+                    <input 
+                        id="register-email" 
+                        name="email" 
+                        type="email" 
+                        required 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your email"
+                    >
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="register-password" class="text-sm font-medium text-stone-700">Password</label>
+                    <div class="relative">
+                        <input 
+                            id="register-password" 
+                            name="password" 
+                            type="password" 
+                            required 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                            placeholder="Create a password"
+                        >
+                        <button type="button" id="toggle-register-password" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                            <i class="fas fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="confirm-password" class="text-sm font-medium text-stone-700">Confirm Password</label>
+                    <div class="relative">
+                        <input 
+                            id="confirm-password" 
+                            name="confirmPassword" 
+                            type="password" 
+                            required 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                            placeholder="Confirm your password"
+                        >
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="terms" required class="w-4 h-4 text-black border-stone-300 rounded focus:ring-black focus:ring-2">
+                    <label for="terms" class="ml-2 text-sm text-stone-600">
+                        I agree to the <a href="#" class="text-black hover:underline">Terms of Service</a> and <a href="#" class="text-black hover:underline">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full bg-black text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="register-submit"
+                >
+                    <span class="flex items-center justify-center">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Create Account
+                    </span>
+                </button>
+    </form>
+
+        </div>
+
+        <!-- Footer -->
+        <p class="text-center text-xs text-stone-500 mt-4">
+            By signing in, you agree to our Terms of Service and Privacy Policy.
+        </p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-white border border-stone-200 rounded-lg shadow-lg p-4 max-w-sm">
+            <div class="flex items-center">
+                <div id="toast-icon" class="flex-shrink-0 mr-3">
+                    <!-- Icon will be inserted here -->
+                </div>
+                <div>
+                    <p id="toast-message" class="text-sm font-medium text-stone-900"></p>
+                    <p id="toast-description" class="text-xs text-stone-600 mt-1"></p>
+                </div>
+                <button id="toast-close" class="ml-4 text-stone-400 hover:text-stone-600">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-black"></div>
+            <span class="text-stone-900 font-medium">Processing...</span>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const toggleLoginPassword = document.getElementById('toggle-login-password');
+        const toggleRegisterPassword = document.getElementById('toggle-register-password');
+        const loginPassword = document.getElementById('login-password');
+        const registerPassword = document.getElementById('register-password');
+        const toast = document.getElementById('toast');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        // Tab Switching
+        loginTab.addEventListener('click', () => {
+            switchTab('login');
+        });
+
+        registerTab.addEventListener('click', () => {
+            switchTab('register');
+        });
+
+        function switchTab(tab) {
+            if (tab === 'login') {
+                loginTab.classList.add('bg-white', 'text-stone-900', 'shadow-sm');
+                loginTab.classList.remove('text-stone-600');
+                registerTab.classList.remove('bg-white', 'text-stone-900', 'shadow-sm');
+                registerTab.classList.add('text-stone-600');
+                
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                registerTab.classList.add('bg-white', 'text-stone-900', 'shadow-sm');
+                registerTab.classList.remove('text-stone-600');
+                loginTab.classList.remove('bg-white', 'text-stone-900', 'shadow-sm');
+                loginTab.classList.add('text-stone-600');
+                
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        // Password Toggle
+        toggleLoginPassword.addEventListener('click', () => {
+            togglePasswordVisibility(loginPassword, toggleLoginPassword);
+        });
+
+        toggleRegisterPassword.addEventListener('click', () => {
+            togglePasswordVisibility(registerPassword, toggleRegisterPassword);
+        });
+
+        function togglePasswordVisibility(input, button) {
+            const icon = button.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Toast Notification
+        function showToast(message, description = '', type = 'success') {
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
+            const toastDescription = document.getElementById('toast-description');
+            
+            // Set icon based on type
+            if (type === 'success') {
+                toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+            } else if (type === 'error') {
+                toastIcon.innerHTML = '<i class="fas fa-exclamation-circle text-red-500"></i>';
+            } else {
+                toastIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500"></i>';
+            }
+            
+            toastMessage.textContent = message;
+            toastDescription.textContent = description;
+            
+            toast.classList.remove('hidden');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Close toast
+        document.getElementById('toast-close').addEventListener('click', () => {
+            toast.classList.add('hidden');
+        });
+
+        // Show/Hide Loading
+        function showLoading(show = true) {
+            if (show) {
+                loadingOverlay.classList.remove('hidden');
+            } else {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+
+        // Login Form Submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+
+            try {
+                showLoading(true);
+                
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('Login successful!', 'Redirecting to dashboard...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showToast('Login failed', result.error || 'Please check your credentials', 'error');
+                }
+            } catch (error) {
+                showToast('Network error', 'Please check your connection and try again', 'error');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Register Form Submission
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            // Password confirmation check
+            if (password !== confirmPassword) {
+                showToast('Password mismatch', 'Passwords do not match', 'error');
+                return;
+            }
+            
+            const data = {
+                username: formData.get('username'),
+                email: formData.get('email'),
+                name: formData.get('name'),
+                password: password
+            };
+
+            try {
+                showLoading(true);
+                
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('Account created!', 'Welcome to Task Manager', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showToast('Registration failed', result.error || 'Please try again', 'error');
+                }
+            } catch (error) {
+                showToast('Network error', 'Please check your connection and try again', 'error');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Input validation feedback
+        document.querySelectorAll('input[required]').forEach(input => {
+            input.addEventListener('blur', () => {
+                if (input.value.trim() === '') {
+                    input.classList.add('border-red-300');
+                    input.classList.remove('border-stone-300');
+                } else {
+                    input.classList.remove('border-red-300');
+                    input.classList.add('border-stone-300');
+                }
+            });
+        });
+    </script>
+  </body>
+</html>

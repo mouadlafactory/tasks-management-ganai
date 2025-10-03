@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management - CRUD Operations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: "hsl(222.2 47.4% 11.2%)",
+                            foreground: "hsl(210 40% 98%)",
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen bg-stone-50">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+    
+    <!-- Main Container -->
+    <div class="relative min-h-screen">
+        <!-- Header -->
+        <header class="bg-white border-b border-stone-200 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-tasks text-white text-sm"></i>
+                        </div>
+                        <h1 class="text-xl font-semibold text-stone-900">Task Manager</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="add-task-btn" class="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-200">
+                            <i class="fas fa-plus mr-2"></i>
+                            Add Task
+                        </button>
+                        <button class="text-stone-600 hover:text-stone-900">
+                            <i class="fas fa-user-circle text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg border border-stone-200 p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i class="fas fa-tasks text-blue-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-stone-600">Total Tasks</p>
+                            <p id="total-tasks" class="text-2xl font-semibold text-stone-900">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg border border-stone-200 p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 rounded-lg">
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-stone-600">Pending</p>
+                            <p id="pending-tasks" class="text-2xl font-semibold text-stone-900">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg border border-stone-200 p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i class="fas fa-spinner text-blue-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-stone-600">In Progress</p>
+                            <p id="progress-tasks" class="text-2xl font-semibold text-stone-900">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg border border-stone-200 p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-stone-600">Completed</p>
+                            <p id="completed-tasks" class="text-2xl font-semibold text-stone-900">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters and Search -->
+            <div class="bg-white rounded-lg border border-stone-200 p-6 mb-6">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <input 
+                            id="search-input" 
+                            type="text" 
+                            placeholder="Search tasks..." 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        >
+                    </div>
+                    <select id="status-filter" class="px-3 py-2 border border-stone-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <select id="priority-filter" class="px-3 py-2 border border-stone-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent">
+                        <option value="">All Priority</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tasks Table -->
+            <div class="bg-white rounded-lg border border-stone-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-stone-200">
+                    <h3 class="text-lg font-medium text-stone-900">Tasks</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-stone-200">
+                        <thead class="bg-stone-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Task</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Priority</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Created</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-stone-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasks-table-body" class="bg-white divide-y divide-stone-200">
+                            <!-- Tasks will be inserted here -->
+                        </tbody>
+                    </table>
+                    <div id="empty-state" class="text-center py-12 hidden">
+                        <i class="fas fa-tasks text-4xl text-stone-300 mb-4"></i>
+                        <h3 class="text-lg font-medium text-stone-900 mb-2">No tasks found</h3>
+                        <p class="text-stone-500">Get started by creating your first task.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Task Modal -->
+    <div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg border border-stone-200 shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-stone-200">
+                <h3 id="modal-title" class="text-lg font-medium text-stone-900">Add New Task</h3>
+            </div>
+            <form id="task-form" class="p-6 space-y-4">
+                <input type="hidden" id="task-id" name="id">
+                
+                <div class="space-y-2">
+                    <label for="task-title" class="text-sm font-medium text-stone-700">Title</label>
+                    <input 
+                        id="task-title" 
+                        name="title" 
+                        type="text" 
+                        required 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="Enter task title"
+                    >
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="task-description" class="text-sm font-medium text-stone-700">Description</label>
+                    <textarea 
+                        id="task-description" 
+                        name="description" 
+                        rows="3" 
+                        required 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                        placeholder="Enter task description"
+                    ></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="task-status" class="text-sm font-medium text-stone-700">Status</label>
+                        <select 
+                            id="task-status" 
+                            name="status" 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        >
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="task-priority" class="text-sm font-medium text-stone-700">Priority</label>
+                        <select 
+                            id="task-priority" 
+                            name="priority" 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        >
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="task-user" class="text-sm font-medium text-stone-700">Assigned User</label>
+                    <input 
+                        id="task-user" 
+                        name="user" 
+                        type="text" 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-md text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="Enter user name"
+                    >
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button 
+                        type="button" 
+                        id="cancel-btn" 
+                        class="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-md hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit" 
+                        id="save-btn" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                    >
+                        Save Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg border border-stone-200 shadow-xl max-w-sm w-full mx-4">
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-stone-900">Delete Task</h3>
+                        <p class="text-sm text-stone-600">This action cannot be undone.</p>
+                    </div>
+                </div>
+                <p class="text-stone-700 mb-6">Are you sure you want to delete this task?</p>
+                <div class="flex justify-end space-x-3">
+                    <button 
+                        id="cancel-delete-btn" 
+                        class="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-md hover:bg-stone-50"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        id="confirm-delete-btn" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-white border border-stone-200 rounded-lg shadow-lg p-4 max-w-sm">
+            <div class="flex items-center">
+                <div id="toast-icon" class="flex-shrink-0 mr-3"></div>
+                <div>
+                    <p id="toast-message" class="text-sm font-medium text-stone-900"></p>
+                </div>
+                <button id="toast-close" class="ml-4 text-stone-400 hover:text-stone-600">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let tasks = [];
+        let editingTaskId = null;
+        let deleteTaskId = null;
+
+        // DOM Elements
+        const tasksTableBody = document.getElementById('tasks-table-body');
+        const emptyState = document.getElementById('empty-state');
+        const taskModal = document.getElementById('task-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const taskForm = document.getElementById('task-form');
+        const searchInput = document.getElementById('search-input');
+        const statusFilter = document.getElementById('status-filter');
+        const priorityFilter = document.getElementById('priority-filter');
+        const toast = document.getElementById('toast');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTasks();
+            setupEventListeners();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Add task button
+            document.getElementById('add-task-btn').addEventListener('click', () => {
+                openTaskModal();
+            });
+
+            // Task form submission
+            taskForm.addEventListener('submit', handleTaskSubmit);
+
+            // Modal close buttons
+            document.getElementById('cancel-btn').addEventListener('click', closeTaskModal);
+            document.getElementById('cancel-delete-btn').addEventListener('click', closeDeleteModal);
+            document.getElementById('confirm-delete-btn').addEventListener('click', confirmDelete);
+
+            // Search and filters
+            searchInput.addEventListener('input', filterTasks);
+            statusFilter.addEventListener('change', filterTasks);
+            priorityFilter.addEventListener('change', filterTasks);
+
+            // Toast close
+            document.getElementById('toast-close').addEventListener('click', () => {
+                toast.classList.add('hidden');
+            });
+
+            // Close modals on outside click
+            taskModal.addEventListener('click', (e) => {
+                if (e.target === taskModal) closeTaskModal();
+            });
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) closeDeleteModal();
+            });
+        }
+
+        // API Functions
+        async function loadTasks() {
+            try {
+                const response = await fetch('/tasks');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    tasks = data.tasks || [];
+                    renderTasks();
+                    updateStats();
+                } else {
+                    showToast('Error loading tasks', 'error');
+                }
+            } catch (error) {
+                showToast('Network error', 'error');
+            }
+        }
+
+        async function createTask(taskData) {
+            try {
+                const response = await fetch('/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('Task created successfully', 'success');
+                    loadTasks();
+                    return true;
+                } else {
+                    showToast(data.error || 'Failed to create task', 'error');
+                    return false;
+                }
+            } catch (error) {
+                showToast('Network error', 'error');
+                return false;
+            }
+        }
+
+        async function updateTask(taskId, taskData) {
+            try {
+                const response = await fetch(`/tasks/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('Task updated successfully', 'success');
+                    loadTasks();
+                    return true;
+                } else {
+                    showToast(data.error || 'Failed to update task', 'error');
+                    return false;
+                }
+            } catch (error) {
+                showToast('Network error', 'error');
+                return false;
+            }
+        }
+
+        async function deleteTask(taskId) {
+            try {
+                const response = await fetch(`/tasks/${taskId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showToast('Task deleted successfully', 'success');
+                    loadTasks();
+                    return true;
+                } else {
+                    showToast('Failed to delete task', 'error');
+                    return false;
+                }
+            } catch (error) {
+                showToast('Network error', 'error');
+                return false;
+            }
+        }
+
+        // UI Functions
+        function renderTasks(filteredTasks = tasks) {
+            if (filteredTasks.length === 0) {
+                tasksTableBody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            tasksTableBody.innerHTML = filteredTasks.map(task => `
+                <tr class="hover:bg-stone-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div>
+                            <div class="text-sm font-medium text-stone-900">${escapeHtml(task.title)}</div>
+                            <div class="text-sm text-stone-500">${escapeHtml(task.description)}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}">
+                            ${task.status.replace('_', ' ')}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(task.priority)}">
+                            ${task.priority}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-900">
+                        ${escapeHtml(task.user || 'Unassigned')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
+                        ${formatDate(task.created_at)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="editTask('${task._id}')" class="text-black hover:text-stone-600 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="openDeleteModal('${task._id}')" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('total-tasks').textContent = tasks.length;
+            document.getElementById('pending-tasks').textContent = tasks.filter(t => t.status === 'pending').length;
+            document.getElementById('progress-tasks').textContent = tasks.filter(t => t.status === 'in_progress').length;
+            document.getElementById('completed-tasks').textContent = tasks.filter(t => t.status === 'completed').length;
+        }
+
+        function filterTasks() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+            const priorityFilter = document.getElementById('priority-filter').value;
+
+            const filtered = tasks.filter(task => {
+                const matchesSearch = task.title.toLowerCase().includes(searchTerm) || 
+                                    task.description.toLowerCase().includes(searchTerm);
+                const matchesStatus = !statusFilter || task.status === statusFilter;
+                const matchesPriority = !priorityFilter || task.priority === priorityFilter;
+
+                return matchesSearch && matchesStatus && matchesPriority;
+            });
+
+            renderTasks(filtered);
+        }
+
+        // Modal Functions
+        function openTaskModal(task = null) {
+            editingTaskId = task ? task._id : null;
+            
+            document.getElementById('modal-title').textContent = task ? 'Edit Task' : 'Add New Task';
+            document.getElementById('save-btn').textContent = task ? 'Update Task' : 'Save Task';
+            
+            if (task) {
+                document.getElementById('task-id').value = task._id;
+                document.getElementById('task-title').value = task.title;
+                document.getElementById('task-description').value = task.description;
+                document.getElementById('task-status').value = task.status;
+                document.getElementById('task-priority').value = task.priority;
+                document.getElementById('task-user').value = task.user || '';
+            } else {
+                taskForm.reset();
+                document.getElementById('task-id').value = '';
+            }
+            
+            taskModal.classList.remove('hidden');
+        }
+
+        function closeTaskModal() {
+            taskModal.classList.add('hidden');
+            editingTaskId = null;
+            taskForm.reset();
+        }
+
+        function openDeleteModal(taskId) {
+            deleteTaskId = taskId;
+            deleteModal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+            deleteTaskId = null;
+        }
+
+        // Event Handlers
+        async function handleTaskSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const taskData = {
+                title: formData.get('title'),
+                description: formData.get('description'),
+                status: formData.get('status'),
+                priority: formData.get('priority'),
+                user: formData.get('user') || 'Unknown'
+            };
+
+            let success;
+            if (editingTaskId) {
+                success = await updateTask(editingTaskId, taskData);
+            } else {
+                success = await createTask(taskData);
+            }
+
+            if (success) {
+                closeTaskModal();
+            }
+        }
+
+        function editTask(taskId) {
+            const task = tasks.find(t => t._id === taskId);
+            if (task) {
+                openTaskModal(task);
+            }
+        }
+
+        async function confirmDelete() {
+            if (deleteTaskId) {
+                const success = await deleteTask(deleteTaskId);
+                if (success) {
+                    closeDeleteModal();
+                }
+            }
+        }
+
+        // Utility Functions
+        function getStatusColor(status) {
+            const colors = {
+                pending: 'bg-yellow-100 text-yellow-800',
+                in_progress: 'bg-blue-100 text-blue-800',
+                completed: 'bg-green-100 text-green-800',
+                cancelled: 'bg-red-100 text-red-800'
+            };
+            return colors[status] || 'bg-stone-100 text-stone-800';
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                low: 'bg-stone-100 text-stone-800',
+                medium: 'bg-yellow-100 text-yellow-800',
+                high: 'bg-orange-100 text-orange-800',
+                urgent: 'bg-red-100 text-red-800'
+            };
+            return colors[priority] || 'bg-stone-100 text-stone-800';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'success') {
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
+            
+            if (type === 'success') {
+                toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+            } else {
+                toastIcon.innerHTML = '<i class="fas fa-exclamation-circle text-red-500"></i>';
+            }
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

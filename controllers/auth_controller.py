@@ -1,8 +1,9 @@
-from flask import jsonify, request
-from db.database import user_collection
+from flask import jsonify, request, make_response 
+from models import User
 from datetime import datetime
 import bcrypt
 from utils.generate_token import generate_token
+import random
 
 def logout():
     return jsonify({"message": "Logout successful"}), 200
@@ -10,43 +11,87 @@ def logout():
 def register():
     try:    
         data = request.get_json()
-        if not data.get('first_name') or not data.get('last_name') or not data.get('email') or not data.get('password'):
-            return jsonify({"message": "Create user failed, missing required fields"}), 400
+        required_fields = ['username', 'email', 'name', 'password']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"message": "Create user failed, missing required fields"}), 400
         
-        encrypted_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        # Check if user already exists
+        existing_user = User.objects(email=data.get('email')).first()
+        if existing_user:
+            return jsonify({"error": "User with this email already exists"}), 400
+            
+        existing_username = User.objects(username=data.get('username')).first()
+        if existing_username:
+            return jsonify({"error": "Username already taken"}), 400
         
-        user_collection.insert_one({
-            "first_name": data.get('first_name'),
-            "last_name": data.get('last_name'),
-            "email": data.get('email'),
-            "password": encrypted_password,
-            "role": data.get('role', "user"),
-            "is_active": data.get('is_active', True),
-            "created_at": datetime.now(),
-            "updated_at": datetime.now(),
-        })
+        # Create user with keyword arguments
+        user = User(
+            username=data.get('username'),
+            email=data.get('email'),
+            name=data.get('name')
+        )
+        user.set_password(data.get('password'))
+        user.save()
         
-        return jsonify({"message": "User registered successfully"}), 201
+        print("i am here")
+        user_created = {
+            "id": str(user.id),
+            "username": user.username,
+            "email": user.email,
+            "name": user.name
+        }
+        return jsonify({"message": "User registered successfully","user": user_created}), 201
     except Exception as e:
-        return jsonify({"message": "Error", "error": str(e)}), 500
+        print("i am here 2")
+        return jsonify({"error": str(e)}), 500
     
     
 def login():
     try:
         data = request.get_json()
-        if not data.get('email') or not data.get('password'):
-            return jsonify({"message": "Login failed, missing required fields"}), 400
+        print(data)
+        required_fields = ['email', 'password']  # 'email' can be email or username
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"error": "Login failed, missing required fields"}), 400
+
+        email_field = data.get('email')
         
-        user = user_collection.find_one({"email": data.get('email')})
+        # Try to find user by email first, then by username
+        user = User.objects(email=email_field).first()
+    
         if not user:
-            return jsonify({"message": "Login failed, user not found, try to register"}), 401
+            return jsonify({"error": "Login failed, user not found"}), 401
         
-        if not bcrypt.checkpw(data.get('password').encode('utf-8'), user.get('password').encode('utf-8')):
-            return jsonify({"message": "Login failed, incorrect password"}), 401
+        if not user.check_password(data.get('password')):
+            return jsonify({"error": "Login failed, incorrect password"}), 401
         
         token = generate_token(user)
+        # Create response
+        response = make_response(jsonify({
+            'message': 'Login successful',
+            'user': {
+                'id': str(user.id),
+                'email': user.email,
+                'name': user.name,
+                'username': user.username
+            },
+            'token': token
+        }), 200)
         
-        return jsonify({"message": "Login successful", "token": token}), 200
+        # Set JWT token in HTTP-only cookie
+        response.set_cookie(
+            'token',
+            token,
+            max_age=1000 * 60 * 60 * 24 * 30, # 30 days
+            httponly=True,
+            secure=True,
+            samesite='Lax'
+        )
+        
+        return response
+        
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
     

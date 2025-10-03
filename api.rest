@@ -58,3 +58,29 @@ GET https://tasks-management-ganai-production.up.railway.app/tasks
 Content-Type: application/json
 
 
+
+### web routes
+
+### login
+POST http://localhost:9090/
+Content-Type: application/json
+
+{
+    "email": "mouad@example.com",
+    "password": "12345678"
+}
+
+
+
+### register
+POST http://localhost:9090/auth/register
+Content-Type: application/json
+
+{
+    "username": "omaima_bounfil_123",
+    "name": "Omaima Bounfil",
+    "email": "omaima@example.com",       
+    "password": "12345678"
+}
+
+

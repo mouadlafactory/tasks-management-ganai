@@ -22,7 +22,6 @@ if __name__ == '__main__':
     try:
         # Connect to MongoDB
         mongo_uri = os.getenv('MONGO_DB_URI', 'mongodb://localhost:27017/')
-        print(f"🔗 Connecting to MongoDB: {mongo_uri}")
         connect(
             db='task_manager',  # Database name as first parameter
             host=mongo_uri,

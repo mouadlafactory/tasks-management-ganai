@@ -1,9 +1,6 @@
 from flask import jsonify, request, make_response 
 from models import User
-from datetime import datetime
-import bcrypt
 from utils.generate_token import generate_token
-import random
 
 def logout():
     return jsonify({"message": "Logout successful"}), 200
@@ -94,5 +91,18 @@ def login():
         
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
+    
+    
+
+def get_current_user(): 
+    user = getattr(request, 'current_user', None)
+    if not user:
+        return jsonify({"error": "User not authenticated"}), 401
+    
+    user_data = {
+        "id": str(user.id),
+        "email": user.email,
+    }
+    return jsonify({"user": user_data}), 200
     
     

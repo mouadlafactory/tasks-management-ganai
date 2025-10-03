@@ -124,7 +124,40 @@ POST http://localhost:9090/tasks
 Content-Type: application/json
 
 {
-    "title": "Test Task",
-    "description": "This is a test task",
+    "title": "we should have a team meeting tomorrow",
+    "description": "we should have a team meeting tomorrow to discuss the project",
     "user": "68dfb8b9284caa0b4353c25d"
 }
+
+### get task
+GET http://localhost:9090/tasks/68dfbf16479444f0cd3c720b
+
+### update task
+PUT http://localhost:9090/tasks/68dfbf16479444f0cd3c720b
+Content-Type: application/json
+
+{
+    "title": "we should have a team meeting tomorrow",
+    "description": "we should have a team meeting tomorrow to discuss the project"
+}
+
+### delete task
+DELETE http://localhost:9090/tasks/68dfbf16479444f0cd3c720b
+
+### login
+POST http://localhost:9090/auth/login
+Content-Type: application/json
+
+{
+    "email": "omaima@example.com",
+    "password": "12345678"
+}
+
+### get all tasks
+GET http://localhost:9090/tasks
+cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCXVCJ9.eyJ1c2VhdsqiuhuhidiuhqsdhuiyX2lkIjoiNjhkZmI4YjkyODRjYWEwYjQzNTNjMjVkIiwiZW1haWwiOiJvbWFpbWFAZXhhbXBsZS5jb20ifQ.C2XTAbE-8V-h2bAGtVS_NY9ie8RdnKWYwXDqUEByos
+
+
+### get current user
+GET http://localhost:9090/auth/me
+cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCXVCJ9.eyJ1c2VhdsqiuhuhidiuhqsdhuiyX2lkIjoiNjhkZmI4YjkyODRjYWEwYjQzNTNjMjVkIiwiZW1haWwiOiJvbWFpbWFAZXhhbXBsZS5jb20ifQ.C2XTAbE-8V-h2bAGtVS_NY9ie8RdnKWYwXDqUEByos

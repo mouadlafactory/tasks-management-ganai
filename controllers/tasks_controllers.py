@@ -22,6 +22,12 @@ def create_task():
 
 def get_all_tasks():
     try:    
+        user = getattr(request, 'current_user', None)
+        if not user:
+            return jsonify({"message": "User not authenticated"}), 401
+        
+        print("user: 🛑🛑🛑🛑🛑🛑🛑🛑 user data 🛑🛑🛑🛑🛑🛑🛑🛑 ", user)
+        
         tasks = Task.objects()
         print("list: ", tasks)
         
@@ -46,7 +52,6 @@ def get_all_tasks():
         return jsonify({"message": "Error", "error": str(e)}), 500
     
     
-
 def get_task(task_id):
     try:
         task = Task.objects(id=task_id).first()
@@ -110,7 +115,6 @@ def update_task(task_id):
         return jsonify({"message": "Task updated", "task": task_dict}), 200
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
-    
     
     
 def delete_task(task_id):

@@ -83,4 +83,48 @@ Content-Type: application/json
     "password": "12345678"
 }
 
+### logout
+POST http://localhost:9090/auth/login
+Content-Type: application/json
 
+{
+    "email": "omaima@example.com",
+    "password": "12345678"
+}
+
+
+### register
+POST https://tasks-management-ganai-production.up.railway.app/auth/login
+Content-Type: application/json
+
+{
+    "email": "mouad@example.com",
+    "password": "12345678"
+}
+
+
+### register
+POST https://tasks-management-ganai-production.up.railway.app/auth/register
+Content-Type: application/json
+
+{
+    "username": "MOUAD_BOUNFIL_123",
+    "name": "Mouad Bounfil",
+    "email": "mouad@example.com",       
+    "password": "12345678"
+}
+
+
+### get all tasks
+GET http://localhost:9090/tasks
+
+
+### create task
+POST http://localhost:9090/tasks
+Content-Type: application/json
+
+{
+    "title": "Test Task",
+    "description": "This is a test task",
+    "user": "68dfb8b9284caa0b4353c25d"
+}
